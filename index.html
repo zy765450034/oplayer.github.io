@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPlayer - Next-Gen Media Player</title>
+<style>
+/* ============================================================
+   CSS Reset & Base
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-card: rgba(255,255,255,0.03);
+  --bg-card-hover: rgba(255,255,255,0.06);
+  --border-card: rgba(255,255,255,0.06);
+  --text-primary: #f0f0f5;
+  --text-secondary: rgba(240,240,245,0.6);
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.35);
+  --accent2: #8b5cf6;
+  --accent2-glow: rgba(139,92,246,0.3);
+  --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+/* ============================================================
+   Animated Background Grid
+   ============================================================ */
+.bg-grid {
+  position: fixed; inset: 0; z-index: -2;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Floating glow orbs */
+.bg-orb {
+  position: fixed; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.4;
+  animation: orbFloat 20s ease-in-out infinite alternate;
+}
+.bg-orb--1 { width: 600px; height: 600px; top: -200px; left: -100px; background: var(--accent-glow); }
+.bg-orb--2 { width: 500px; height: 500px; bottom: -150px; right: -100px; background: var(--accent2-glow); animation-delay: -10s; }
+.bg-orb--3 { width: 300px; height: 300px; top: 40%; left: 50%; background: rgba(236,72,153,0.15); animation-delay: -5s; }
+
+@keyframes orbFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(40px, -30px) scale(1.1); }
+  100% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 40px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(10,10,15,0.7); backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.3s;
+}
+.nav__logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 20px; font-weight: 700; letter-spacing: -0.5px;
+}
+.nav__logo-img {
+  width: 32px; height: 32px; border-radius: 8px;
+}
+.nav__logo span {
+  background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav__links { display: flex; gap: 32px; }
+.nav__links a {
+  font-size: 14px; color: var(--text-secondary); transition: color 0.2s;
+}
+.nav__links a:hover { color: var(--text-primary); }
+.nav__cta {
+  padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  background: var(--accent); color: #fff; transition: box-shadow 0.3s, transform 0.2s;
+}
+.nav__cta:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-1px); }
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 120px 24px 80px;
+}
+.hero__title {
+  font-size: clamp(48px, 8vw, 88px); font-weight: 800; letter-spacing: -2px;
+  line-height: 1.05; margin-bottom: 20px;
+  animation: fadeUp 0.8s 0.1s ease-out both;
+}
+.hero__title span {
+  background: var(--gradient-hero);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.hero__desc {
+  max-width: 560px; font-size: 18px; color: var(--text-secondary);
+  line-height: 1.7; margin-bottom: 40px;
+  animation: fadeUp 0.8s 0.2s ease-out both;
+}
+
+.hero__actions {
+  display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  animation: fadeUp 0.8s 0.3s ease-out both;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; border-radius: 12px; font-size: 15px; font-weight: 600;
+  transition: all 0.3s; cursor: pointer; border: none;
+}
+.btn--primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.btn--primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+.btn--outline {
+  background: transparent; color: var(--text-primary);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.btn--outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+
+/* Hero Gallery */
+.hero__gallery {
+  margin-top: 64px; width: 100%; max-width: 900px;
+  animation: fadeUp 0.8s 0.4s ease-out both;
+}
+.gallery {
+  position: relative; border-radius: 16px; overflow: hidden;
+  background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+}
+.gallery__track {
+  display: flex; transition: transform 0.5s ease;
+}
+.gallery__slide {
+  min-width: 100%; opacity: 0; transition: opacity 0.5s ease;
+  position: absolute; top: 0; left: 0; right: 0;
+}
+.gallery__slide.active {
+  opacity: 1; position: relative;
+}
+.gallery__img {
+  width: 100%; height: auto; display: block;
+}
+.gallery__dots {
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 10;
+}
+.gallery__dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.3); border: none;
+  cursor: pointer; transition: all 0.3s;
+}
+.gallery__dot.active, .gallery__dot:hover {
+  background: var(--accent); transform: scale(1.2);
+}
+.gallery__arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; cursor: pointer; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s; opacity: 0;
+}
+.gallery:hover .gallery__arrow { opacity: 1; }
+.gallery__arrow:hover {
+  background: var(--accent); border-color: var(--accent);
+}
+.gallery__arrow--prev { left: 16px; }
+.gallery__arrow--next { right: 16px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Section common
+   ============================================================ */
+.section {
+  padding: 120px 24px;
+  max-width: 1200px; margin: 0 auto;
+}
+.section__label {
+  display: inline-block; font-size: 13px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--accent); margin-bottom: 12px;
+}
+.section__title {
+  font-size: clamp(32px, 5vw, 48px); font-weight: 700;
+  letter-spacing: -1px; margin-bottom: 16px;
+}
+.section__desc {
+  font-size: 17px; color: var(--text-secondary); max-width: 600px; margin-bottom: 56px;
+}
+.section--center { text-align: center; }
+.section--center .section__desc { margin-left: auto; margin-right: auto; }
+
+/* ============================================================
+   Features Grid
+   ============================================================ */
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+.feature-card {
+  position: relative; padding: 32px; border-radius: 16px;
+  background: var(--bg-card); border: 1px solid var(--border-card);
+  transition: all 0.4s; overflow: hidden;
+}
+.feature-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: 16px;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(59,130,246,0.08) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.4s;
+}
+.feature-card:hover { border-color: rgba(59,130,246,0.15); background: var(--bg-card-hover); transform: translateY(-2px); }
+.feature-card:hover::before { opacity: 1; }
+
+.feature-card__icon {
+  width: 48px; height: 48px; border-radius: 12px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(59,130,246,0.1); color: var(--accent); font-size: 22px;
+}
+.feature-card__title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.feature-card__desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+/* Icon color variants */
+.feature-card--purple .feature-card__icon { background: rgba(139,92,246,0.1); color: var(--accent2); }
+.feature-card--pink .feature-card__icon { background: rgba(236,72,153,0.1); color: #ec4899; }
+.feature-card--green .feature-card__icon { background: rgba(16,185,129,0.1); color: #10b981; }
+.feature-card--orange .feature-card__icon { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.feature-card--cyan .feature-card__icon { background: rgba(6,182,212,0.1); color: #06b6d4; }
+
+/* ============================================================
+   Tech Stack
+   ============================================================ */
+.tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+.tech-item {
+  display: flex; align-items: center; gap: 14px; padding: 20px 24px;
+  border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border-card);
+  transition: all 0.3s;
+}
+.tech-item:hover { border-color: rgba(255,255,255,0.1); background: var(--bg-card-hover); }
+.tech-item__icon { font-size: 28px; flex-shrink: 0; }
+.tech-item__name { font-size: 15px; font-weight: 600; }
+.tech-item__desc { font-size: 12px; color: var(--text-secondary); }
+
+/* ============================================================
+   Platform Section
+   ============================================================ */
+.platforms {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+}
+.platform-card {
+  flex: 1; min-width: 260px; max-width: 380px;
+  padding: 40px 32px; border-radius: 20px; text-align: center;
+  background: var(--bg-card); border: 1px solid var(--border-card);
+  transition: all 0.4s;
+}
+.platform-card:hover { transform: translateY(-4px); border-color: rgba(59,130,246,0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+.platform-card__icon { font-size: 48px; margin-bottom: 16px; }
+.platform-card__title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.platform-card__desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ============================================================
+   Stats
+   ============================================================ */
+.stats { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin-top: 80px; }
+.stat { text-align: center; }
+.stat__number {
+  font-size: 48px; font-weight: 800; letter-spacing: -2px;
+  background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat__label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+/* ============================================================
+   CTA
+   ============================================================ */
+.cta-section {
+  padding: 120px 24px; text-align: center;
+}
+.cta-box {
+  max-width: 700px; margin: 0 auto; padding: 64px 48px;
+  border-radius: 24px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.06));
+  border: 1px solid rgba(59,130,246,0.15);
+}
+.cta-box::before {
+  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(59,130,246,0.1), transparent, rgba(139,92,246,0.08), transparent);
+  animation: ctaSpin 15s linear infinite;
+}
+@keyframes ctaSpin { to { transform: rotate(360deg); } }
+.cta-box > * { position: relative; z-index: 1; }
+.cta-box__title { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
+.cta-box__desc { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.footer {
+  padding: 40px 24px; text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px; color: var(--text-secondary);
+}
+
+/* ============================================================
+   Scroll Animations
+   ============================================================ */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .nav__links { display: none; }
+  .section { padding: 80px 20px; }
+  .hero { padding: 100px 20px 60px; }
+  .platforms { flex-direction: column; align-items: center; }
+  .stats { gap: 24px; }
+  .stat__number { font-size: 36px; }
+  .cta-box { padding: 40px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb--1"></div>
+<div class="bg-orb bg-orb--2"></div>
+<div class="bg-orb bg-orb--3"></div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav__logo">
+    <img src="logo.png" alt="OPlayer" class="nav__logo-img">
+    <span>OPlayer</span>
+  </div>
+  <div class="nav__links">
+    <a href="#features">功能特性</a>
+    <a href="#guide">使用说明</a>
+    <a href="#platforms">支持平台</a>
+  </div>
+  <a href="#download" class="nav__cta">Download</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1 class="hero__title">
+    Play <span>Everything.</span><br>Everywhere.
+  </h1>
+  <p class="hero__desc">
+    OPlayer 是新一代跨平台媒体播放器，专为 Apple 设备优化。<br>
+    Metal 硬件加速渲染，极致流畅，格式全覆盖。
+  </p>
+  <div class="hero__actions">
+    <a href="#download" class="btn btn--primary">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a>
+    <a href="#guide" class="btn btn--outline">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      使用说明
+    </a>
+  </div>
+
+  <!-- Screenshots Gallery -->
+  <div class="hero__gallery">
+    <div class="gallery">
+      <div class="gallery__track">
+        <div class="gallery__slide active">
+          <img src="img.jpg" alt="OPlayer 截图 1" class="gallery__img">
+        </div>
+        <div class="gallery__slide">
+          <img src="img1.jpg" alt="OPlayer 截图 2" class="gallery__img">
+        </div>
+      </div>
+      <div class="gallery__dots">
+        <button class="gallery__dot active" data-index="0"></button>
+        <button class="gallery__dot" data-index="1"></button>
+      </div>
+      <button class="gallery__arrow gallery__arrow--prev">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="gallery__arrow gallery__arrow--next">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="section section--center">
+  <span class="section__label reveal">Features</span>
+  <h2 class="section__title reveal">Everything you need</h2>
+  <p class="section__desc reveal">从格式支持到硬件加速，OPlayer 提供专业级的播放体验。</p>
+
+  <div class="features">
+    <div class="feature-card reveal">
+      <div class="feature-card__icon">&#9654;</div>
+      <h3 class="feature-card__title">全格式支持</h3>
+      <p class="feature-card__desc">支持 MKV、MP4、AVI、FLAC、H.265/HEVC、VP9、AV1 等几乎所有主流音视频格式。</p>
+    </div>
+    <div class="feature-card feature-card--purple reveal">
+      <div class="feature-card__icon">&#9881;</div>
+      <h3 class="feature-card__title">Metal 硬件加速</h3>
+      <p class="feature-card__desc">原生 Metal 渲染管线，GPU 硬解 + 直接渲染，4K/HDR 内容零延迟、低功耗。</p>
+    </div>
+    <div class="feature-card feature-card--pink reveal">
+      <div class="feature-card__icon">&#127760;</div>
+      <h3 class="feature-card__title">网络串流</h3>
+      <p class="feature-card__desc">直接播放 HTTP/HLS/DASH/RTSP 流媒体，内置缓冲进度显示，网络自适应。</p>
+    </div>
+    <div class="feature-card feature-card--green reveal">
+      <div class="feature-card__icon">&#128250;</div>
+      <h3 class="feature-card__title">画中画模式</h3>
+      <p class="feature-card__desc">一键进入画中画，悬浮在所有窗口之上。支持窗口拖拽、边缘吸附、大小调整。</p>
+    </div>
+    <div class="feature-card feature-card--orange reveal">
+      <div class="feature-card__icon">&#128247;</div>
+      <h3 class="feature-card__title">AirPlay 投屏</h3>
+      <p class="feature-card__desc">iOS 端支持隔空播放，一键投屏到 Apple TV / 智能电视，画质无损。</p>
+    </div>
+    <div class="feature-card feature-card--cyan reveal">
+      <div class="feature-card__icon">&#128203;</div>
+      <h3 class="feature-card__title">播放历史</h3>
+      <p class="feature-card__desc">自动记录播放进度，随时从上次位置继续。Dock 菜单 / 长按菜单快速恢复。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 使用说明 -->
+<section id="guide" class="section section--center">
+  <span class="section__label reveal">Guide</span>
+  <h2 class="section__title reveal">使用说明</h2>
+  <p class="section__desc reveal">快速上手 OPlayer，享受极致播放体验。</p>
+
+  <div class="features">
+    <div class="feature-card reveal">
+      <div class="feature-card__icon">&#128194;</div>
+      <h3 class="feature-card__title">打开文件</h3>
+      <p class="feature-card__desc">点击"打开文件"或直接将视频拖拽到播放器窗口即可开始播放。支持从相册、文件 App、iCloud 导入。</p>
+    </div>
+    <div class="feature-card feature-card--purple reveal">
+      <div class="feature-card__icon">&#127760;</div>
+      <h3 class="feature-card__title">网络播放</h3>
+      <p class="feature-card__desc">输入视频链接即可直接播放网络视频。支持 HTTP、HLS、DASH、RTSP 等常见流媒体协议。</p>
+    </div>
+    <div class="feature-card feature-card--pink reveal">
+      <div class="feature-card__icon">&#128250;</div>
+      <h3 class="feature-card__title">画中画</h3>
+      <p class="feature-card__desc">播放时点击画中画按钮，视频将悬浮显示。可自由调整大小和位置，边看视频边处理其他事务。</p>
+    </div>
+    <div class="feature-card feature-card--green reveal">
+      <div class="feature-card__icon">&#128247;</div>
+      <h3 class="feature-card__title">AirPlay 投屏</h3>
+      <p class="feature-card__desc">iOS 端点击投屏按钮，选择目标设备即可投屏到 Apple TV 或智能电视。画质无损传输。</p>
+    </div>
+    <div class="feature-card feature-card--orange reveal">
+      <div class="feature-card__icon">&#9881;</div>
+      <h3 class="feature-card__title">播放设置</h3>
+      <p class="feature-card__desc">支持倍速播放、音轨切换、字幕加载、画面比例调整等。长按播放器可快速调出设置菜单。</p>
+    </div>
+    <div class="feature-card feature-card--cyan reveal">
+      <div class="feature-card__icon">&#128203;</div>
+      <h3 class="feature-card__title">播放历史</h3>
+      <p class="feature-card__desc">自动记录播放进度，再次打开自动跳转到上次位置。在历史记录中可快速恢复任意已播放视频。</p>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="section section--center">
+  <div class="stats reveal">
+    <div class="stat">
+      <div class="stat__number">200+</div>
+      <div class="stat__label">支持的格式</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">4K</div>
+      <div class="stat__label">HDR 硬解</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">60fps</div>
+      <div class="stat__label">流畅渲染</div>
+    </div>
+    <div class="stat">
+      <div class="stat__number">&lt;50ms</div>
+      <div class="stat__label">启动延迟</div>
+    </div>
+  </div>
+</section>
+
+<!-- Platforms -->
+<section id="platforms" class="section section--center">
+  <span class="section__label reveal">Platforms</span>
+  <h2 class="section__title reveal">One player, all Apple devices</h2>
+  <p class="section__desc reveal">原生适配 macOS 和 iOS，针对每个平台深度优化。</p>
+
+  <div class="platforms reveal">
+    <div class="platform-card">
+      <div class="platform-card__icon">&#128421;</div>
+      <h3 class="platform-card__title">macOS</h3>
+      <p class="platform-card__desc">
+        原生 AppKit 界面<br>
+        画中画 / 全屏模式<br>
+        多窗口播放<br>
+        Dock 菜单快捷操作<br>
+        Metal / OpenGL 双引擎
+      </p>
+    </div>
+    <div class="platform-card">
+      <div class="platform-card__icon">&#128241;</div>
+      <h3 class="platform-card__title">iOS</h3>
+      <p class="platform-card__desc">
+        原生 UIKit 界面<br>
+        手势控制<br>
+        AirPlay 隔空播放<br>
+        Home Screen 快捷菜单<br>
+        Metal 硬件渲染
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="download" class="cta-section">
+  <div class="cta-box reveal">
+    <h2 class="cta-box__title">Ready to play?</h2>
+    <p class="cta-box__desc">下载 OPlayer，体验极致的播放。</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="#" class="btn btn--primary">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        macOS Download
+      </a>
+      <a href="#" class="btn btn--outline">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        iOS Download
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>&copy; 2026 OPlayer. Designed for Apple.</p>
+</footer>
+
+<!-- Scroll Reveal & Card Mouse Effect -->
+<script>
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// Feature card mouse glow
+document.querySelectorAll('.feature-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+  });
+});
+
+// Nav background on scroll
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  nav.style.background = window.scrollY > 50
+    ? 'rgba(10,10,15,0.9)'
+    : 'rgba(10,10,15,0.7)';
+});
+
+// Gallery slideshow
+const slides = document.querySelectorAll('.gallery__slide');
+const dots = document.querySelectorAll('.gallery__dot');
+const prevBtn = document.querySelector('.gallery__arrow--prev');
+const nextBtn = document.querySelector('.gallery__arrow--next');
+let currentSlide = 0;
+let autoPlayInterval;
+
+function showSlide(index) {
+  slides.forEach((slide, i) => {
+    slide.classList.toggle('active', i === index);
+  });
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+  currentSlide = index;
+}
+
+function nextSlide() {
+  showSlide((currentSlide + 1) % slides.length);
+}
+
+function prevSlide() {
+  showSlide((currentSlide - 1 + slides.length) % slides.length);
+}
+
+function startAutoPlay() {
+  autoPlayInterval = setInterval(nextSlide, 4000);
+}
+
+function stopAutoPlay() {
+  clearInterval(autoPlayInterval);
+}
+
+// Event listeners
+prevBtn.addEventListener('click', () => { stopAutoPlay(); prevSlide(); startAutoPlay(); });
+nextBtn.addEventListener('click', () => { stopAutoPlay(); nextSlide(); startAutoPlay(); });
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => { stopAutoPlay(); showSlide(i); startAutoPlay(); });
+});
+
+// Start auto play
+startAutoPlay();
+</script>
+</body>
+</html>
