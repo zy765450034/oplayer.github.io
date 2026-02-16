@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPlayer - Next-Gen Media Player</title>
+<title>iNSMV - Next-Gen Media Player</title>
 <style>
 /* ============================================================
    CSS Reset & Base
@@ -88,12 +88,6 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 14px; color: var(--text-secondary); transition: color 0.2s;
 }
 .nav__links a:hover { color: var(--text-primary); }
-.nav__cta {
-  padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  background: var(--accent); color: #fff; transition: box-shadow 0.3s, transform 0.2s;
-}
-.nav__cta:hover { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-1px); }
-
 /* ============================================================
    Hero
    ============================================================ */
@@ -252,21 +246,6 @@ a { color: var(--accent); text-decoration: none; }
 .feature-card--cyan .feature-card__icon { background: rgba(6,182,212,0.1); color: #06b6d4; }
 
 /* ============================================================
-   Tech Stack
-   ============================================================ */
-.tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-
-.tech-item {
-  display: flex; align-items: center; gap: 14px; padding: 20px 24px;
-  border-radius: 12px; background: var(--bg-card); border: 1px solid var(--border-card);
-  transition: all 0.3s;
-}
-.tech-item:hover { border-color: rgba(255,255,255,0.1); background: var(--bg-card-hover); }
-.tech-item__icon { font-size: 28px; flex-shrink: 0; }
-.tech-item__name { font-size: 15px; font-weight: 600; }
-.tech-item__desc { font-size: 12px; color: var(--text-secondary); }
-
-/* ============================================================
    Platform Section
    ============================================================ */
 .platforms {
@@ -293,28 +272,6 @@ a { color: var(--accent); text-decoration: none; }
   background: var(--gradient-hero); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .stat__label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
-
-/* ============================================================
-   CTA
-   ============================================================ */
-.cta-section {
-  padding: 120px 24px; text-align: center;
-}
-.cta-box {
-  max-width: 700px; margin: 0 auto; padding: 64px 48px;
-  border-radius: 24px; position: relative; overflow: hidden;
-  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.06));
-  border: 1px solid rgba(59,130,246,0.15);
-}
-.cta-box::before {
-  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-  background: conic-gradient(from 0deg, transparent, rgba(59,130,246,0.1), transparent, rgba(139,92,246,0.08), transparent);
-  animation: ctaSpin 15s linear infinite;
-}
-@keyframes ctaSpin { to { transform: rotate(360deg); } }
-.cta-box > * { position: relative; z-index: 1; }
-.cta-box__title { font-size: 36px; font-weight: 700; margin-bottom: 12px; }
-.cta-box__desc { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
 
 /* ============================================================
    Footer
@@ -345,7 +302,6 @@ a { color: var(--accent); text-decoration: none; }
   .platforms { flex-direction: column; align-items: center; }
   .stats { gap: 24px; }
   .stat__number { font-size: 36px; }
-  .cta-box { padding: 40px 24px; }
 }
 </style>
 </head>
@@ -360,15 +316,14 @@ a { color: var(--accent); text-decoration: none; }
 <!-- Navigation -->
 <nav class="nav">
   <div class="nav__logo">
-    <img src="logo.png" alt="OPlayer" class="nav__logo-img">
-    <span>OPlayer</span>
+    <img src="logo.png" alt="iNSMV" class="nav__logo-img">
+    <span>iNSMV</span>
   </div>
   <div class="nav__links">
     <a href="#features">功能特性</a>
     <a href="#guide">使用说明</a>
     <a href="#platforms">支持平台</a>
   </div>
-  <a href="#download" class="nav__cta">Download</a>
 </nav>
 
 <!-- Hero -->
@@ -377,15 +332,11 @@ a { color: var(--accent); text-decoration: none; }
     Play <span>Everything.</span><br>Everywhere.
   </h1>
   <p class="hero__desc">
-    OPlayer 是新一代跨平台媒体播放器，专为 Apple 设备优化。<br>
+    iNSMV 是新一代跨平台媒体播放器，专为 Apple 设备优化。<br>
     Metal 硬件加速渲染，极致流畅，格式全覆盖。
   </p>
   <div class="hero__actions">
-    <a href="#download" class="btn btn--primary">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download
-    </a>
-    <a href="#guide" class="btn btn--outline">
+    <a href="#guide" class="btn btn--primary">
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       使用说明
     </a>
@@ -396,10 +347,10 @@ a { color: var(--accent); text-decoration: none; }
     <div class="gallery">
       <div class="gallery__track">
         <div class="gallery__slide active">
-          <img src="img.jpg" alt="OPlayer 截图 1" class="gallery__img">
+          <img src="img.jpg" alt="iNSMV 截图 1" class="gallery__img">
         </div>
         <div class="gallery__slide">
-          <img src="img1.jpg" alt="OPlayer 截图 2" class="gallery__img">
+          <img src="img1.jpg" alt="iNSMV 截图 2" class="gallery__img">
         </div>
       </div>
       <div class="gallery__dots">
@@ -419,24 +370,24 @@ a { color: var(--accent); text-decoration: none; }
 <!-- Features -->
 <section id="features" class="section section--center">
   <span class="section__label reveal">Features</span>
-  <h2 class="section__title reveal">Everything you need</h2>
-  <p class="section__desc reveal">从格式支持到硬件加速，OPlayer 提供专业级的播放体验。</p>
+  <h2 class="section__title reveal">强大的播放能力</h2>
+  <p class="section__desc reveal">从格式支持到硬件加速，iNSMV 提供专业级的播放体验。</p>
 
   <div class="features">
     <div class="feature-card reveal">
       <div class="feature-card__icon">&#9654;</div>
       <h3 class="feature-card__title">全格式支持</h3>
-      <p class="feature-card__desc">支持 MKV、MP4、AVI、FLAC、H.265/HEVC、VP9、AV1 等几乎所有主流音视频格式。</p>
+      <p class="feature-card__desc">支持 MKV、MP4、AVI、MOV、FLV、FLAC、H.265/HEVC、VP9、AV1 等几乎所有主流音视频格式。</p>
     </div>
     <div class="feature-card feature-card--purple reveal">
       <div class="feature-card__icon">&#9881;</div>
       <h3 class="feature-card__title">Metal 硬件加速</h3>
-      <p class="feature-card__desc">原生 Metal 渲染管线，GPU 硬解 + 直接渲染，4K/HDR 内容零延迟、低功耗。</p>
+      <p class="feature-card__desc">原生 Metal 渲染管线，GPU 硬解码 + 直接渲染，4K/HDR 内容流畅播放、低功耗省电。</p>
     </div>
     <div class="feature-card feature-card--pink reveal">
       <div class="feature-card__icon">&#127760;</div>
       <h3 class="feature-card__title">网络串流</h3>
-      <p class="feature-card__desc">直接播放 HTTP/HLS/DASH/RTSP 流媒体，内置缓冲进度显示，网络自适应。</p>
+      <p class="feature-card__desc">直接播放 HTTP/HLS/RTSP/RTMP 流媒体，智能缓冲，网络自适应，支持直播和点播。</p>
     </div>
     <div class="feature-card feature-card--green reveal">
       <div class="feature-card__icon">&#128250;</div>
@@ -444,14 +395,14 @@ a { color: var(--accent); text-decoration: none; }
       <p class="feature-card__desc">一键进入画中画，悬浮在所有窗口之上。支持窗口拖拽、边缘吸附、大小调整。</p>
     </div>
     <div class="feature-card feature-card--orange reveal">
-      <div class="feature-card__icon">&#128247;</div>
-      <h3 class="feature-card__title">AirPlay 投屏</h3>
-      <p class="feature-card__desc">iOS 端支持隔空播放，一键投屏到 Apple TV / 智能电视，画质无损。</p>
+      <div class="feature-card__icon">&#127925;</div>
+      <h3 class="feature-card__title">音轨与字幕</h3>
+      <p class="feature-card__desc">多音轨切换、外挂字幕加载，支持 SRT/ASS/SSA 字幕格式，字幕样式可自定义。</p>
     </div>
     <div class="feature-card feature-card--cyan reveal">
       <div class="feature-card__icon">&#128203;</div>
       <h3 class="feature-card__title">播放历史</h3>
-      <p class="feature-card__desc">自动记录播放进度，随时从上次位置继续。Dock 菜单 / 长按菜单快速恢复。</p>
+      <p class="feature-card__desc">自动记录播放进度，随时从上次位置继续。支持播放列表管理和收藏夹功能。</p>
     </div>
   </div>
 </section>
@@ -460,38 +411,38 @@ a { color: var(--accent); text-decoration: none; }
 <section id="guide" class="section section--center">
   <span class="section__label reveal">Guide</span>
   <h2 class="section__title reveal">使用说明</h2>
-  <p class="section__desc reveal">快速上手 OPlayer，享受极致播放体验。</p>
+  <p class="section__desc reveal">快速上手 iNSMV，享受极致播放体验。</p>
 
   <div class="features">
     <div class="feature-card reveal">
       <div class="feature-card__icon">&#128194;</div>
       <h3 class="feature-card__title">打开文件</h3>
-      <p class="feature-card__desc">点击"打开文件"或直接将视频拖拽到播放器窗口即可开始播放。支持从相册、文件 App、iCloud 导入。</p>
+      <p class="feature-card__desc">点击主界面"打开文件"按钮，或直接将视频拖拽到播放器窗口。支持从相册、文件 App、iCloud Drive 导入媒体文件。</p>
     </div>
     <div class="feature-card feature-card--purple reveal">
       <div class="feature-card__icon">&#127760;</div>
       <h3 class="feature-card__title">网络播放</h3>
-      <p class="feature-card__desc">输入视频链接即可直接播放网络视频。支持 HTTP、HLS、DASH、RTSP 等常见流媒体协议。</p>
+      <p class="feature-card__desc">点击"打开链接"输入视频 URL 即可播放。支持 HTTP/HTTPS 直链、HLS (m3u8)、RTSP/RTMP 流媒体协议。</p>
     </div>
     <div class="feature-card feature-card--pink reveal">
-      <div class="feature-card__icon">&#128250;</div>
-      <h3 class="feature-card__title">画中画</h3>
-      <p class="feature-card__desc">播放时点击画中画按钮，视频将悬浮显示。可自由调整大小和位置，边看视频边处理其他事务。</p>
+      <div class="feature-card__icon">&#9199;</div>
+      <h3 class="feature-card__title">播放控制</h3>
+      <p class="feature-card__desc">左右滑动快进/快退，上下滑动调节音量/亮度。双击暂停/播放，长按可调节播放速度 (0.5x - 2.0x)。</p>
     </div>
     <div class="feature-card feature-card--green reveal">
-      <div class="feature-card__icon">&#128247;</div>
-      <h3 class="feature-card__title">AirPlay 投屏</h3>
-      <p class="feature-card__desc">iOS 端点击投屏按钮，选择目标设备即可投屏到 Apple TV 或智能电视。画质无损传输。</p>
+      <div class="feature-card__icon">&#128250;</div>
+      <h3 class="feature-card__title">画中画</h3>
+      <p class="feature-card__desc">播放时点击画中画按钮，视频将悬浮显示。可自由调整窗口大小和位置，边看视频边处理其他事务。</p>
     </div>
     <div class="feature-card feature-card--orange reveal">
-      <div class="feature-card__icon">&#9881;</div>
-      <h3 class="feature-card__title">播放设置</h3>
-      <p class="feature-card__desc">支持倍速播放、音轨切换、字幕加载、画面比例调整等。长按播放器可快速调出设置菜单。</p>
+      <div class="feature-card__icon">&#127925;</div>
+      <h3 class="feature-card__title">音轨与字幕</h3>
+      <p class="feature-card__desc">支持多音轨切换，可选择不同语言配音。内置字幕加载，支持 SRT、ASS、SSA 等常见字幕格式。</p>
     </div>
     <div class="feature-card feature-card--cyan reveal">
-      <div class="feature-card__icon">&#128203;</div>
-      <h3 class="feature-card__title">播放历史</h3>
-      <p class="feature-card__desc">自动记录播放进度，再次打开自动跳转到上次位置。在历史记录中可快速恢复任意已播放视频。</p>
+      <div class="feature-card__icon">&#128247;</div>
+      <h3 class="feature-card__title">AirPlay 投屏</h3>
+      <p class="feature-card__desc">iOS 端点击投屏按钮，选择目标设备即可投屏到 Apple TV 或智能电视，享受大屏观影体验。</p>
     </div>
   </div>
 </section>
@@ -550,27 +501,9 @@ a { color: var(--accent); text-decoration: none; }
   </div>
 </section>
 
-<!-- CTA -->
-<section id="download" class="cta-section">
-  <div class="cta-box reveal">
-    <h2 class="cta-box__title">Ready to play?</h2>
-    <p class="cta-box__desc">下载 OPlayer，体验极致的播放。</p>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <a href="#" class="btn btn--primary">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        macOS Download
-      </a>
-      <a href="#" class="btn btn--outline">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        iOS Download
-      </a>
-    </div>
-  </div>
-</section>
-
 <!-- Footer -->
 <footer class="footer">
-  <p>&copy; 2026 OPlayer. Designed for Apple.</p>
+  <p>&copy; 2026 iNSMV. Designed for Apple.</p>
 </footer>
 
 <!-- Scroll Reveal & Card Mouse Effect -->
